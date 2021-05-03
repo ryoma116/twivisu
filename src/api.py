@@ -9,7 +9,7 @@ from .rankings import (
     print_top_followers_count_user,
     print_top_friends_count_user,
 )
-from .tweets import tweet_search
+from .tweets import search_tweets
 
 
 class TwiPlotlyAPI:
@@ -21,8 +21,8 @@ class TwiPlotlyAPI:
         self._search_word = None
         self._search_query = None
 
-    def tweet_search(self, search_word: str, search_query: str):
-        tweets = tweet_search(
+    def search_tweets(self, search_word: str, search_query: str):
+        tweets = search_tweets(
             api=self._api, search_query=search_word + " " + search_query
         )
         self._search_word = search_word

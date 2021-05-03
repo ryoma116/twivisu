@@ -9,7 +9,7 @@ from .limits import get_search_limit_reset_time, is_search_limit
 from .processors import make_weekday
 
 
-def tweet_search(api: tweepy.API, search_query: str) -> List[Dict]:
+def search_tweets(api: tweepy.API, search_query: str) -> List[Dict]:
     """ツイートを検索する
 
     :param api: tweepy.API
