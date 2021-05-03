@@ -42,7 +42,7 @@ class TwiPlotlyAPI:
         print_top_followers_count_user(
             self._df,
             search_word=self._search_word,
-            search_querhy=self._search_query,
+            search_query=self._search_query,
             top=top,
         )
 
@@ -50,7 +50,7 @@ class TwiPlotlyAPI:
         print_top_friends_count_user(
             self._df,
             search_word=self._search_word,
-            search_querhy=self._search_query,
+            search_query=self._search_query,
             top=top,
         )
 
@@ -58,7 +58,7 @@ class TwiPlotlyAPI:
         print_top_ff_ratio_high_user(
             self._df,
             search_word=self._search_word,
-            search_querhy=self._search_query,
+            search_query=self._search_query,
             top=top,
             min_followers_count=min_followers_count,
         )
@@ -67,7 +67,7 @@ class TwiPlotlyAPI:
         print_top_ff_ratio_low_user(
             self._df,
             search_word=self._search_word,
-            search_querhy=self._search_query,
+            search_query=self._search_query,
             top=top,
             min_followers_count=min_followers_count,
         )
@@ -78,7 +78,7 @@ class TwiPlotlyAPI:
         print_top_ff_ratio_close_to_one_user(
             self._df,
             search_word=self._search_word,
-            search_querhy=self._search_query,
+            search_query=self._search_query,
             top=top,
             min_followers_count=min_followers_count,
         )
