@@ -22,9 +22,11 @@ class TwiPlotlyAPI:
         self._search_word = None
         self._search_query = None
 
-    def search_tweets(self, search_word: str, search_query: str):
+    def search_tweets(self, search_word: str, search_query: str, limit: int = None):
         tweets = search_tweets(
-            api=self._api, search_query=search_word + " " + search_query
+            api=self._api,
+            search_query=search_word + " " + search_query,
+            limit=limit,
         )
         self._search_word = search_word
         self._search_query = search_query

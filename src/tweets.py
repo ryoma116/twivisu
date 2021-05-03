@@ -9,11 +9,12 @@ from .limits import get_search_limit_reset_time, is_search_limit
 from .processors import make_weekday
 
 
-def search_tweets(api: tweepy.API, search_query: str) -> List[Dict]:
+def search_tweets(api: tweepy.API, search_query: str, limit: int) -> List[Dict]:
     """ツイートを検索する
 
     :param api: tweepy.API
     :param search_query: 検索クエリ
+    :param limit: 検索件数の上限、この値に達したら結果を返す
     """
 
     print(f"===== Start =====")
@@ -30,6 +31,7 @@ def search_tweets(api: tweepy.API, search_query: str) -> List[Dict]:
 
     tweets = []
     next_max_tweet_id = None
+    limited = False
     while True:
         _tweets = []
         try:
@@ -53,6 +55,10 @@ def search_tweets(api: tweepy.API, search_query: str) -> List[Dict]:
             time.sleep(reset_time)
 
         for t in _tweets:
+            if limit and len(tweets) >= limit:
+                limited = True
+                break
+
             dt = _convert_utc_to_jst(t.created_at)
             tweets.append(
                 {
@@ -74,8 +80,11 @@ def search_tweets(api: tweepy.API, search_query: str) -> List[Dict]:
                 }
             )
 
-        next_max_tweet_id = _tweets[-1].id - 1
         print(f"{'{:,}'.format(len(tweets))} 件取得")
+        if limited:
+            break
+
+        next_max_tweet_id = _tweets[-1].id - 1
         time.sleep(1)
 
     print(f"===== End（合計{'{:,}'.format(len(tweets))}） =====")
