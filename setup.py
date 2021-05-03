@@ -12,16 +12,15 @@ def _requires_from_file(filename):
 
 
 setuptools.setup(
-    name="twitter-api-utils",
+    name="twiplotly",
     version="0.1.0",
     author="Ryoma Uehara",
     description="Provides functions for displaying Twitter API graphs and rankings.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/ryoma116/twitter-analytics-utils",
-    packages=["twitter_api_utils"],
-    package_dir={"twitter_api_utils": "src"},
-    py_modules=[splitext(basename(path))[0] for path in glob('src/*.py')],
+    url="https://github.com/ryoma116/twiplotly",
+    packages=["twiplotly"],
+    package_dir={"twiplotly": "src"},
     include_package_data=True,
     zip_safe=False,
     install_requires=_requires_from_file('requirements.txt'),

@@ -1,6 +1,6 @@
 import time
-from datetime import datetime, timedelta, date
-from typing import Union
+from datetime import date, datetime, timedelta
+from typing import Dict, List, Union
 
 import tweepy
 
@@ -9,7 +9,7 @@ from .limits import get_search_limit_reset_time, is_search_limit
 from .processors import make_weekday
 
 
-def tweet_search(api: tweepy.API, search_query: str):
+def tweet_search(api: tweepy.API, search_query: str) -> List[Dict]:
     """ツイートを検索する
 
     :param api: tweepy.API
