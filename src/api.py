@@ -8,6 +8,7 @@ from .rankings import (
     print_top_ff_ratio_low_user,
     print_top_followers_count_user,
     print_top_friends_count_user,
+    print_top_tweet_count_user,
 )
 from .tweets import search_tweets
 
@@ -35,8 +36,13 @@ class TwiPlotlyAPI:
     def show_daily_tweet_user_count(self):
         show_daily_tweet_user_count(self._df, search_word=self._search_word)
 
-    def print_top_tweet_count_user(self):
-        show_daily_tweet_user_count(self._df, search_word=self._search_word)
+    def print_top_tweet_count_user(self, top: int = 10):
+        print_top_tweet_count_user(
+            self._df,
+            search_word=self._search_word,
+            search_query=self._search_query,
+            top=top,
+        )
 
     def print_top_followers_count_user(self, top: int = 10):
         print_top_followers_count_user(
