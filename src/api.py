@@ -12,6 +12,7 @@ from .rankings import (
     print_top_tweet_count_user,
 )
 from .tweets import search_tweets
+from .validates import validate_tweet_exists
 
 
 class TwiPlotlyAPI:
@@ -39,16 +40,19 @@ class TwiPlotlyAPI:
         self._df = pandas.DataFrame(tweets)
 
     def show_daily_tweet_count(self):
+        validate_tweet_exists(self._df)
         show_daily_tweet_count(
             self._df, search_word=self._search_word, timezone=self._timezone
         )
 
     def show_daily_tweet_user_count(self):
+        validate_tweet_exists(self._df)
         show_daily_tweet_user_count(
             self._df, search_word=self._search_word, timezone=self._timezone
         )
 
     def print_top_tweet_count_user(self, top: int = 10):
+        validate_tweet_exists(self._df)
         print_top_tweet_count_user(
             self._df,
             search_word=self._search_word,
@@ -57,6 +61,7 @@ class TwiPlotlyAPI:
         )
 
     def print_top_followers_count_user(self, top: int = 10):
+        validate_tweet_exists(self._df)
         print_top_followers_count_user(
             self._df,
             search_word=self._search_word,
@@ -65,6 +70,7 @@ class TwiPlotlyAPI:
         )
 
     def print_top_friends_count_user(self, top: int = 10):
+        validate_tweet_exists(self._df)
         print_top_friends_count_user(
             self._df,
             search_word=self._search_word,
@@ -73,6 +79,7 @@ class TwiPlotlyAPI:
         )
 
     def print_top_ff_ratio_high_user(self, top: int = 10, min_followers_count: int = 0):
+        validate_tweet_exists(self._df)
         print_top_ff_ratio_high_user(
             self._df,
             search_word=self._search_word,
@@ -82,6 +89,7 @@ class TwiPlotlyAPI:
         )
 
     def print_top_ff_ratio_low_user(self, top: int = 10, min_followers_count: int = 0):
+        validate_tweet_exists(self._df)
         print_top_ff_ratio_low_user(
             self._df,
             search_word=self._search_word,
@@ -93,6 +101,7 @@ class TwiPlotlyAPI:
     def print_top_ff_ratio_close_to_one_user(
         self, top: int = 10, min_followers_count: int = 0
     ):
+        validate_tweet_exists(self._df)
         print_top_ff_ratio_close_to_one_user(
             self._df,
             search_word=self._search_word,
