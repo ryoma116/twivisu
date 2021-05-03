@@ -3,7 +3,7 @@ from typing import List
 
 import pandas
 
-from .constants import JST, WEEKDAYS
+from .constants import WEEKDAYS
 from .utils import count_users
 
 
@@ -31,13 +31,14 @@ def make_weekday(dt: datetime) -> str:
     return f"{dstr}({WEEKDAYS[dt.weekday()]})"
 
 
-def make_tweeted_weekday_range() -> List[str]:
+def make_tweeted_weekday_range(timezone) -> List[str]:
     """グラフに描画する曜日付き日付ラベルの範囲を生成する
 
+    :param timezone: timezoneオブジェクト
     :return 曜日付き日付ラベルのリスト
     """
     weekdays = []
-    _now = datetime.now(JST)
+    _now = datetime.now(timezone)
     for i in range(7):
         ts = _now - timedelta(days=i + 1)
         weekdays.append(make_weekday(ts))
@@ -45,14 +46,15 @@ def make_tweeted_weekday_range() -> List[str]:
     return weekdays[::-1]
 
 
-def make_count_tweeted_weekday_df(df: pandas.DataFrame) -> pandas.DataFrame:
+def make_count_tweeted_weekday_df(df: pandas.DataFrame, timezone) -> pandas.DataFrame:
     """日付別にツイート数をカウントしたDataFrameを生成する
 
     :param df: 対象のDataFrame
+    :param timezone: timezoneオブジェクト
     :return 日付別ツイート数DataFrame
     """
     _df = df.groupby("tweeted_weekday")["tweet_id"].agg(count="count")
-    for wd in make_tweeted_weekday_range():
+    for wd in make_tweeted_weekday_range(timezone=timezone):
         if wd not in _df.index:
             _zero_df = pandas.DataFrame([0], index=[wd], columns=["count"])
             _zero_df.index.name = "tweeted_weekday"

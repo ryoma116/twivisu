@@ -8,13 +8,14 @@ from .processors import (
 )
 
 
-def show_daily_tweet_count(df: pandas.DataFrame, search_word: str):
+def show_daily_tweet_count(df: pandas.DataFrame, search_word: str, timezone):
     """日付別のツイート数を折れ線グラフで出力する
 
     :param df: 集計対象のDataFrame
     :param search_word: タイトルに表示する検索ワード
+    :param timezone: timezoneオブジェクト
     """
-    _df = make_count_tweeted_weekday_df(df)
+    _df = make_count_tweeted_weekday_df(df, timezone=timezone)
     _total_count = _df.sum()["count"]
     fig = plot_line(
         _df,
@@ -30,14 +31,15 @@ def show_daily_tweet_count(df: pandas.DataFrame, search_word: str):
     _print_last_tweeted_datetime(df)
 
 
-def show_daily_tweet_user_count(df: pandas.DataFrame, search_word: str):
+def show_daily_tweet_user_count(df: pandas.DataFrame, search_word: str, timezone):
     """日付別のツイート人数を折れ線グラフで出力する
 
     :param df: 集計対象のDataFrame
     :param search_word: タイトルに表示する検索ワード
+    :param timezone: timezoneオブジェクト
     """
     _df = make_tweet_user_weekday_max_hour_df(df)
-    _df = make_count_tweeted_weekday_df(_df)
+    _df = make_count_tweeted_weekday_df(_df, timezone=timezone)
     _total_count = _df.sum()["count"]
     fig = plot_line(
         _df,
