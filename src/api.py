@@ -1,4 +1,5 @@
 import pandas
+import pytz
 import tweepy
 
 from .graphs import show_daily_tweet_count, show_daily_tweet_user_count
@@ -14,27 +15,38 @@ from .tweets import search_tweets
 
 
 class TwiPlotlyAPI:
-    def __init__(self, api_key, api_secret, access_token, access_token_secret):
+    def __init__(
+        self, api_key, api_secret, access_token, access_token_secret, timezone="UTC"
+    ):
         auth = tweepy.OAuthHandler(api_key, api_secret)
         auth.set_access_token(access_token, access_token_secret)
         self._api = tweepy.API(auth)
         self._df = None
         self._search_word = None
         self._search_query = None
+        self._timezone = pytz.timezone(timezone)
 
-    def search_tweets(self, search_word: str, search_query: str):
+    def search_tweets(self, search_word: str, advanced_query: str, limit: int = None):
+        search_query = search_word + " " + advanced_query
         tweets = search_tweets(
-            api=self._api, search_query=search_word + " " + search_query
+            api=self._api,
+            search_query=search_query,
+            limit=limit,
+            timezone=self._timezone,
         )
         self._search_word = search_word
         self._search_query = search_query
         self._df = pandas.DataFrame(tweets)
 
     def show_daily_tweet_count(self):
-        show_daily_tweet_count(self._df, search_word=self._search_word)
+        show_daily_tweet_count(
+            self._df, search_word=self._search_word, timezone=self._timezone
+        )
 
     def show_daily_tweet_user_count(self):
-        show_daily_tweet_user_count(self._df, search_word=self._search_word)
+        show_daily_tweet_user_count(
+            self._df, search_word=self._search_word, timezone=self._timezone
+        )
 
     def print_top_tweet_count_user(self, top: int = 10):
         print_top_tweet_count_user(

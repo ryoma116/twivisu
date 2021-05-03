@@ -1,6 +1,3 @@
-from datetime import timedelta, timezone
-
-JST = timezone(timedelta(hours=+9), "JST")
 WEEKDAYS = ["月", "火", "水", "木", "金", "土", "日"]
 
 MAX_SEARCH_COUNT = 100
