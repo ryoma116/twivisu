@@ -72,7 +72,7 @@ def search_tweets(
                 {
                     "tweeted_dt": dt,
                     "tweeted_date": dt.date(),
-                    "tweeted_weekday": make_weekday(dt),
+                    "tweeted_weekday": make_weekday(dt, timezone=timezone),
                     "tweeted_hour": dt.strftime("%H"),
                     "tweet_id": t.id,
                     "favorite_count": t.favorite_count,

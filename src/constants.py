@@ -1,4 +1,5 @@
-WEEKDAYS = ["月", "火", "水", "木", "金", "土", "日"]
+WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+JA_WEEKDAYS = ["月", "火", "水", "木", "金", "土", "日"]
 
 MAX_SEARCH_COUNT = 100
 FULL_TEXT_TWEET_MODE = "extended"

@@ -3,7 +3,7 @@ from typing import List
 
 import pandas
 
-from .constants import WEEKDAYS
+from .constants import JA_WEEKDAYS, WEEKDAYS
 from .utils import count_users
 
 
@@ -21,14 +21,18 @@ def make_tweet_user_weekday_max_hour_df(df: pandas.DataFrame) -> pandas.DataFram
     return df[_cols].groupby(_group_cols).max().reset_index()
 
 
-def make_weekday(dt: datetime) -> str:
+def make_weekday(dt: datetime, timezone) -> str:
     """曜日付きの日付を生成する
 
     :param dt: datetime
+    :param timezone: timezoneオブジェクト
     :return 形式：%-m/%-d(曜日)
     """
     dstr = dt.strftime("%-m/%-d")
-    return f"{dstr}({WEEKDAYS[dt.weekday()]})"
+    if timezone.zone == "Asia/Tokyo":
+        return f"{dstr}({JA_WEEKDAYS[dt.weekday()]})"
+    else:
+        return f"{dstr}({WEEKDAYS[dt.weekday()]})"
 
 
 def make_tweeted_weekday_range(timezone) -> List[str]:
@@ -41,7 +45,7 @@ def make_tweeted_weekday_range(timezone) -> List[str]:
     _now = datetime.now(timezone)
     for i in range(7):
         ts = _now - timedelta(days=i + 1)
-        weekdays.append(make_weekday(ts))
+        weekdays.append(make_weekday(ts, timezone=timezone))
 
     return weekdays[::-1]
 
