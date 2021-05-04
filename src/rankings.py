@@ -5,7 +5,7 @@ import pandas as pd
 from .processors import make_ff_ratio_df
 
 
-def print_top_user(
+def make_user_ranking(
     df: pd.DataFrame,
     col: str,
     top: int = 10,
@@ -37,7 +37,7 @@ def print_top_user(
         num += 1
 
 
-def print_top_ff_ratio_low_user(
+def make_low_ff_ratio_user_ranking(
     df: pd.DataFrame,
     top: int = 10,
     search_word: str = "",
@@ -54,7 +54,7 @@ def print_top_ff_ratio_low_user(
     """
     _df = make_ff_ratio_df(df, min_followers_count=min_followers_count)
     _df = _df.sort_values("ff_ratio", ascending=True)
-    print_top_user(
+    make_user_ranking(
         _df,
         top=top,
         search_word=search_word,
@@ -64,7 +64,7 @@ def print_top_ff_ratio_low_user(
     )
 
 
-def print_top_ff_ratio_high_user(
+def make_high_ff_ratio_user_ranking(
     df: pd.DataFrame,
     top: int = 10,
     search_word: str = "",
@@ -81,7 +81,7 @@ def print_top_ff_ratio_high_user(
     """
     _df = make_ff_ratio_df(df, min_followers_count=min_followers_count)
     _df = _df.sort_values("ff_ratio", ascending=False)
-    print_top_user(
+    make_user_ranking(
         _df,
         top=top,
         search_word=search_word,
@@ -91,7 +91,7 @@ def print_top_ff_ratio_high_user(
     )
 
 
-def print_top_ff_ratio_close_to_one_user(
+def make_close_to_one_ff_ratio_user_ranking(
     df: pd.DataFrame,
     top: int = 10,
     search_word: str = "",
@@ -111,7 +111,7 @@ def print_top_ff_ratio_close_to_one_user(
     _df = _df.sort_values(
         ["ff_ratio_close_to_one", "followers_count"], ascending=[True, False]
     )
-    print_top_user(
+    make_user_ranking(
         _df,
         top=top,
         search_word=search_word,
@@ -121,7 +121,7 @@ def print_top_ff_ratio_close_to_one_user(
     )
 
 
-def print_top_followers_count_user(
+def make_followers_user_ranking(
     df: pd.DataFrame, top: int = 10, search_word: str = "", search_query: str = ""
 ):
     """ツイート数の多いユーザを画面に出力する
@@ -137,7 +137,7 @@ def print_top_followers_count_user(
         .reset_index()
     )
     _df = _df.sort_values("followers_count", ascending=False)
-    print_top_user(
+    make_user_ranking(
         _df,
         top=top,
         search_word=search_word,
@@ -146,7 +146,7 @@ def print_top_followers_count_user(
     )
 
 
-def print_top_friends_count_user(
+def make_friends_user_ranking(
     df: pd.DataFrame, top: int = 10, search_word: str = "", search_query: str = ""
 ):
     """ツイート数の多いユーザを画面に出力する
@@ -162,7 +162,7 @@ def print_top_friends_count_user(
         .reset_index()
     )
     _df = _df.sort_values("friends_count", ascending=False)
-    print_top_user(
+    make_user_ranking(
         _df,
         top=top,
         search_word=search_word,
@@ -171,7 +171,7 @@ def print_top_friends_count_user(
     )
 
 
-def print_top_tweet_count_user(
+def make_tweets_user_ranking(
     df: pd.DataFrame, top: int = 10, search_word: str = "", search_query: str = ""
 ):
     """ツイート数の多いユーザを画面に出力する
@@ -187,7 +187,7 @@ def print_top_tweet_count_user(
         .reset_index()
     )
     _df = _df.sort_values("tweet_count", ascending=False)
-    print_top_user(
+    make_user_ranking(
         _df,
         top=top,
         search_word=search_word,
