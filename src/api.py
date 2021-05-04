@@ -17,7 +17,7 @@ from .tweets import search_tweets
 from .validates import validate_tweet_exists
 
 
-class TwiPlotlyAPI:
+class TwiVisuAPI:
     def __init__(
         self, api_key, api_secret, access_token, access_token_secret, timezone="UTC"
     ):
