@@ -5,13 +5,18 @@ from typing import Dict, List, Union
 import pytz
 import tweepy
 
-from .constants import FULL_TEXT_TWEET_MODE, MAX_SEARCH_COUNT, TODAY_EXCLUDED
-from .limits import get_search_limit_reset_time, is_search_limit
+from .constants import (
+    API_COUNTS,
+    FULL_TEXT_TWEET_MODE,
+    SEARCH_API_PATH,
+    TODAY_EXCLUDED,
+)
+from .limits import get_rate_limit_reset_time, is_rate_limit
 from .processors import make_weekday
 
 
 def search_tweets(
-    api: tweepy.API, search_query: str, limit: int, timezone
+    api: tweepy.API, search_query: str, limit: int, timezone, follower_ids: List[id]
 ) -> List[Dict]:
     """ツイートを検索する
 
@@ -19,6 +24,7 @@ def search_tweets(
     :param search_query: 検索クエリ
     :param timezone: timezoneオブジェクト
     :param limit: 検索件数の上限、この値に達したら結果を返す
+    :param follower_ids: フォロワーIDのリスト
     """
 
     print(f"===== Start =====")
@@ -37,12 +43,17 @@ def search_tweets(
     next_max_tweet_id = None
     limited = False
     while True:
+        if is_rate_limit(api, api_path=SEARCH_API_PATH):
+            reset_time = get_rate_limit_reset_time(api, api_path=SEARCH_API_PATH)
+            print(f"アクセス上限のため処理休止中({reset_time}秒)..")
+            time.sleep(reset_time)
+
         _tweets = []
         try:
             _tweets = api.search(
                 q=search_query,
                 tweet_mode=FULL_TEXT_TWEET_MODE,
-                count=MAX_SEARCH_COUNT,
+                count=API_COUNTS[SEARCH_API_PATH],
                 max_id=next_max_tweet_id,
             )
         except tweepy.RateLimitError:
@@ -52,11 +63,6 @@ def search_tweets(
         # 取得するツイートがなくなった場合に処理終了
         if len(_tweets) == 0:
             break
-
-        if is_search_limit(api):
-            reset_time = get_search_limit_reset_time(api)
-            print(f"アクセス上限のため処理休止中({reset_time}秒)..")
-            time.sleep(reset_time)
 
         for t in _tweets:
             if timezone == "UTC":
@@ -81,6 +87,7 @@ def search_tweets(
                     "followers_count": t.user.followers_count,
                     "friends_count": t.user.friends_count,
                     "following": t.user.following,
+                    "follower": t.user.id in follower_ids,
                 }
             )
 

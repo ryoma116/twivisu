@@ -8,6 +8,7 @@ from .filters import filter_user
 from .graphs import make_daily_tweet_users_graph, make_daily_tweets_graph
 from .rankings import make_user_ranking
 from .tweets import search_tweets
+from .users import get_follower_ids
 from .validates import validate_tweet_exists
 
 
@@ -25,11 +26,13 @@ class TwiVisuAPI:
 
     def search_tweets(self, search_word: str, advanced_query: str, limit: int = None):
         search_query = search_word + " " + advanced_query
+        follower_ids = get_follower_ids(api=self._api, user_id=self._api.me().id)
         tweets = search_tweets(
             api=self._api,
             search_query=search_query,
             limit=limit,
             timezone=self._timezone,
+            follower_ids=follower_ids,
         )
         self._search_word = search_word
         self._search_query = search_query

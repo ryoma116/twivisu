@@ -104,6 +104,7 @@ def make_user_df(
             followers_count=("followers_count", "max"),
             tweets_count=("tweet_id", "count"),
             following=("following", "max"),
+            follower=("follower", "max"),
         )
         .reset_index()
     )
@@ -122,6 +123,7 @@ def make_user_df(
         "ff_ratio",
         "ff_ratio_close_to_one",
         "following",
+        "follower",
     ]
     return _df[cols]
 
