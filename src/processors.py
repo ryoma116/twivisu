@@ -3,7 +3,7 @@ from typing import List
 
 import pandas
 
-from .constants import WEEKDAYS
+from .constants import JA_WEEKDAYS, WEEKDAYS
 from .utils import count_users
 
 
@@ -21,14 +21,18 @@ def make_tweet_user_weekday_max_hour_df(df: pandas.DataFrame) -> pandas.DataFram
     return df[_cols].groupby(_group_cols).max().reset_index()
 
 
-def make_weekday(dt: datetime) -> str:
+def make_weekday(dt: datetime, timezone) -> str:
     """曜日付きの日付を生成する
 
     :param dt: datetime
+    :param timezone: timezoneオブジェクト
     :return 形式：%-m/%-d(曜日)
     """
     dstr = dt.strftime("%-m/%-d")
-    return f"{dstr}({WEEKDAYS[dt.weekday()]})"
+    if timezone.zone == "Asia/Tokyo":
+        return f"{dstr}({JA_WEEKDAYS[dt.weekday()]})"
+    else:
+        return f"{dstr}({WEEKDAYS[dt.weekday()]})"
 
 
 def make_tweeted_weekday_range(timezone) -> List[str]:
@@ -41,7 +45,7 @@ def make_tweeted_weekday_range(timezone) -> List[str]:
     _now = datetime.now(timezone)
     for i in range(7):
         ts = _now - timedelta(days=i + 1)
-        weekdays.append(make_weekday(ts))
+        weekdays.append(make_weekday(ts, timezone=timezone))
 
     return weekdays[::-1]
 
@@ -85,29 +89,39 @@ def make_count_tweeted_hour_df(df: pandas.DataFrame) -> pandas.DataFrame:
     return _df.sort_index().reset_index()
 
 
-def make_ff_ratio_df(
-    df: pandas.DataFrame, min_followers_count: int = 0
+def make_user_df(
+    df: pandas.DataFrame,
 ) -> pandas.DataFrame:
-    """FF比を計算したDataFrameを生成する
-
-    フォロー数、フォロワー数どちらかが0は計算ができないので、1に変換しておく
+    """ユーザをユニークにしたDataFrameを生成する
 
     :param df: 計算対象のDataFrame
-    :param min_followers_count: フォロワー数の下限値、指定した値よりフォロワー数が多いユーザを対象とする
     :return 計算後のDataFrame
     """
     _df = (
-        df.groupby(["user_screen_name", "user_name"])[
-            ["friends_count", "followers_count"]
-        ]
-        .max()
+        df.groupby(["user_screen_name", "user_name"])
+        .agg(
+            friends_count=("friends_count", "max"),
+            followers_count=("followers_count", "max"),
+            tweets_count=("tweet_id", "count"),
+        )
         .reset_index()
     )
-    _df["friends_count"] = _df["friends_count"].apply(lambda x: x if x > 0 else 1)
-    _df["followers_count"] = _df["followers_count"].apply(lambda x: x if x > 0 else 1)
-    _df["ff_ratio"] = _df["followers_count"] / _df["friends_count"]
-    _df = _df[_df["followers_count"] >= min_followers_count]
-    return _df
+
+    # フォロー数、フォロワー数どちらかが0は計算ができないので、1に変換して計算する
+    _df["_friends_count"] = _df["friends_count"].apply(lambda x: x if x > 0 else 1)
+    _df["_followers_count"] = _df["followers_count"].apply(lambda x: x if x > 0 else 1)
+    _df["ff_ratio"] = _df["_followers_count"] / _df["_friends_count"]
+    _df["ff_ratio_close_to_one"] = (1.0 - _df["ff_ratio"]).abs()
+    cols = [
+        "user_screen_name",
+        "user_name",
+        "tweets_count",
+        "followers_count",
+        "friends_count",
+        "ff_ratio",
+        "ff_ratio_close_to_one",
+    ]
+    return _df[cols]
 
 
 def make_title(df: pandas.DataFrame, main_title: str, count: int, search_word: str):

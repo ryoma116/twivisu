@@ -59,10 +59,6 @@ def search_tweets(
             time.sleep(reset_time)
 
         for t in _tweets:
-            if limit and len(tweets) >= limit:
-                limited = True
-                break
-
             if timezone == "UTC":
                 dt = t.created_at
             else:
@@ -72,7 +68,7 @@ def search_tweets(
                 {
                     "tweeted_dt": dt,
                     "tweeted_date": dt.date(),
-                    "tweeted_weekday": make_weekday(dt),
+                    "tweeted_weekday": make_weekday(dt, timezone=timezone),
                     "tweeted_hour": dt.strftime("%H"),
                     "tweet_id": t.id,
                     "favorite_count": t.favorite_count,
@@ -87,6 +83,10 @@ def search_tweets(
                     "following": t.user.following,
                 }
             )
+
+            if limit and len(tweets) >= limit:
+                limited = True
+                break
 
         print(f"{'{:,}'.format(len(tweets))} 件取得")
         if limited:

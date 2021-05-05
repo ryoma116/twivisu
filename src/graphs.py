@@ -8,7 +8,7 @@ from .processors import (
 )
 
 
-def show_daily_tweet_count(df: pandas.DataFrame, search_word: str, timezone):
+def make_daily_tweets_graph(df: pandas.DataFrame, search_word: str, timezone):
     """日付別のツイート数を折れ線グラフで出力する
 
     :param df: 集計対象のDataFrame
@@ -31,7 +31,7 @@ def show_daily_tweet_count(df: pandas.DataFrame, search_word: str, timezone):
     _print_last_tweeted_datetime(df)
 
 
-def show_daily_tweet_user_count(df: pandas.DataFrame, search_word: str, timezone):
+def make_daily_tweet_users_graph(df: pandas.DataFrame, search_word: str, timezone):
     """日付別のツイート人数を折れ線グラフで出力する
 
     :param df: 集計対象のDataFrame

@@ -2,20 +2,16 @@ import pandas
 import pytz
 import tweepy
 
-from .graphs import show_daily_tweet_count, show_daily_tweet_user_count
-from .rankings import (
-    print_top_ff_ratio_close_to_one_user,
-    print_top_ff_ratio_high_user,
-    print_top_ff_ratio_low_user,
-    print_top_followers_count_user,
-    print_top_friends_count_user,
-    print_top_tweet_count_user,
-)
+from .constants import FfRatioOrderModes
+from .errors import ParameterError
+from .filters import filter_user
+from .graphs import make_daily_tweet_users_graph, make_daily_tweets_graph
+from .rankings import make_user_ranking
 from .tweets import search_tweets
 from .validates import validate_tweet_exists
 
 
-class TwiPlotlyAPI:
+class TwiVisuAPI:
     def __init__(
         self, api_key, api_secret, access_token, access_token_secret, timezone="UTC"
     ):
@@ -39,73 +35,80 @@ class TwiPlotlyAPI:
         self._search_query = search_query
         self._df = pandas.DataFrame(tweets)
 
-    def show_daily_tweet_count(self):
+    def make_daily_tweets_graph(self, **kwargs):
         validate_tweet_exists(self._df)
-        show_daily_tweet_count(
-            self._df, search_word=self._search_word, timezone=self._timezone
+        _df = filter_user(self._df, **kwargs)
+        make_daily_tweets_graph(
+            _df, search_word=self._search_word, timezone=self._timezone
         )
 
-    def show_daily_tweet_user_count(self):
+    def make_daily_tweet_users_graph(self, **kwargs):
         validate_tweet_exists(self._df)
-        show_daily_tweet_user_count(
-            self._df, search_word=self._search_word, timezone=self._timezone
+        _df = filter_user(self._df, **kwargs)
+        make_daily_tweet_users_graph(
+            _df, search_word=self._search_word, timezone=self._timezone
         )
 
-    def print_top_tweet_count_user(self, top: int = 10):
+    def make_tweets_user_ranking(self, **kwargs):
         validate_tweet_exists(self._df)
-        print_top_tweet_count_user(
+        make_user_ranking(
             self._df,
             search_word=self._search_word,
             search_query=self._search_query,
-            top=top,
+            col="tweets_count",
+            ascending=False,
+            **kwargs
         )
 
-    def print_top_followers_count_user(self, top: int = 10):
+    def make_followers_user_ranking(self, **kwargs):
         validate_tweet_exists(self._df)
-        print_top_followers_count_user(
+        make_user_ranking(
             self._df,
             search_word=self._search_word,
             search_query=self._search_query,
-            top=top,
+            col="followers_count",
+            ascending=False,
+            **kwargs
         )
 
-    def print_top_friends_count_user(self, top: int = 10):
+    def make_friends_user_ranking(self, **kwargs):
         validate_tweet_exists(self._df)
-        print_top_friends_count_user(
+        make_user_ranking(
             self._df,
             search_word=self._search_word,
             search_query=self._search_query,
-            top=top,
+            col="friends_count",
+            ascending=False,
+            **kwargs
         )
 
-    def print_top_ff_ratio_high_user(self, top: int = 10, min_followers_count: int = 0):
-        validate_tweet_exists(self._df)
-        print_top_ff_ratio_high_user(
-            self._df,
-            search_word=self._search_word,
-            search_query=self._search_query,
-            top=top,
-            min_followers_count=min_followers_count,
-        )
-
-    def print_top_ff_ratio_low_user(self, top: int = 10, min_followers_count: int = 0):
-        validate_tweet_exists(self._df)
-        print_top_ff_ratio_low_user(
-            self._df,
-            search_word=self._search_word,
-            search_query=self._search_query,
-            top=top,
-            min_followers_count=min_followers_count,
-        )
-
-    def print_top_ff_ratio_close_to_one_user(
-        self, top: int = 10, min_followers_count: int = 0
+    def make_ff_ratio_user_ranking(
+        self, order_mode: str = FfRatioOrderModes.HIGH.value, **kwargs
     ):
         validate_tweet_exists(self._df)
-        print_top_ff_ratio_close_to_one_user(
+
+        col = "ff_ratio"
+        if order_mode == FfRatioOrderModes.HIGH.value:
+            ascending = False
+
+        elif order_mode == FfRatioOrderModes.LOW.value:
+            ascending = True
+
+        elif order_mode == FfRatioOrderModes.CLOSE_TO_ONE.value:
+            col = "ff_ratio_close_to_one"
+            ascending = True
+
+        else:
+            raise ParameterError(
+                "Please select a valid choice for order_mode. (high, low, close_to_one)"
+            )
+
+        make_user_ranking(
             self._df,
             search_word=self._search_word,
             search_query=self._search_query,
-            top=top,
-            min_followers_count=min_followers_count,
+            col=col,
+            ascending=ascending,
+            value_fmt="{:.4f}",
+            **kwargs
         )
