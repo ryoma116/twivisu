@@ -2,7 +2,7 @@ import time
 
 import tweepy
 
-from src.constants import API_TYPES
+from .constants import API_TYPES
 
 
 def get_rate_limit_reset_time(api: tweepy.API, api_path: str) -> int:
