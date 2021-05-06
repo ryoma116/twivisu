@@ -1,6 +1,6 @@
+import logging
 import time
 from datetime import date, datetime, timedelta
-from logging import getLogger
 from typing import Dict, List, Union
 
 import pytz
@@ -8,9 +8,10 @@ import tweepy
 
 from .constants import API_COUNTS, FULL_TEXT_TWEET_MODE, SEARCH_API_PATH, TODAY_EXCLUDED
 from .limits import get_rate_limit_reset_time, is_rate_limit
+from .loggers import get_logger
 from .processors import make_weekday
 
-logger = getLogger(__name__)
+logger = get_logger(__name__, loglevel=logging.INFO)
 
 
 def search_tweets(

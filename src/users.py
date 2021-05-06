@@ -1,5 +1,5 @@
+import logging
 import time
-from logging import getLogger
 from typing import List
 
 import tweepy
@@ -7,9 +7,10 @@ import tweepy
 from .constants import API_COUNTS, API_URLS, FOLLOWER_IDS_API_PATH, FRIEND_IDS_API_PATH
 from .errors import RateLimitError
 from .limits import get_rate_limit_reset_time, is_rate_limit
+from .loggers import get_logger
 from .twitters import execute_get_method
 
-logger = getLogger(__name__)
+logger = get_logger(__name__, loglevel=logging.INFO)
 
 
 def get_follower_ids(api: tweepy.API, user_screen_name: str) -> List[int]:
@@ -17,6 +18,7 @@ def get_follower_ids(api: tweepy.API, user_screen_name: str) -> List[int]:
 
     :param api: tweepy.API
     :param user_screen_name: 対象ユーザ名
+    :return フォロワーのユーザIDリスト
     """
     return _get_user_ids(api, user_screen_name, api_path=FOLLOWER_IDS_API_PATH)
 
@@ -26,16 +28,18 @@ def get_following_ids(api: tweepy.API, user_screen_name: str) -> List[int]:
 
     :param api: tweepy.API
     :param user_screen_name: 対象ユーザ名
+    :return フォロー中のユーザIDリスト
     """
     return _get_user_ids(api, user_screen_name, api_path=FRIEND_IDS_API_PATH)
 
 
-def _get_user_ids(api: tweepy.API, user_screen_name: str, api_path: str):
+def _get_user_ids(api: tweepy.API, user_screen_name: str, api_path: str) -> List[int]:
     """フォロワー or フォロー中ユーザのIDを取得する
 
     :param api: tweepy.API
     :param user_screen_name: 対象ユーザ名
     :param api_path: Twitter APIのパス
+    :return Twitter APIから取得したユーザIDリスト
     """
     ids = []
     next_cursor = -1
