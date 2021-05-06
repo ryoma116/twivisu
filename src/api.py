@@ -1,4 +1,5 @@
 import logging
+from typing import Dict
 
 import pandas
 import pytz
@@ -77,7 +78,7 @@ class TwiVisuAPI:
 
     def make_tweets_user_ranking(self, **kwargs):
         validate_tweet_exists(self._df)
-        make_user_ranking(
+        rankings = make_user_ranking(
             self._df,
             search_word=self._search_word,
             search_query=self._search_query,
@@ -85,10 +86,11 @@ class TwiVisuAPI:
             ascending=False,
             **kwargs,
         )
+        _print_user_rankings(rankings)
 
     def make_followers_user_ranking(self, **kwargs):
         validate_tweet_exists(self._df)
-        make_user_ranking(
+        rankings = make_user_ranking(
             self._df,
             search_word=self._search_word,
             search_query=self._search_query,
@@ -96,10 +98,11 @@ class TwiVisuAPI:
             ascending=False,
             **kwargs,
         )
+        _print_user_rankings(rankings)
 
     def make_friends_user_ranking(self, **kwargs):
         validate_tweet_exists(self._df)
-        make_user_ranking(
+        rankings = make_user_ranking(
             self._df,
             search_word=self._search_word,
             search_query=self._search_query,
@@ -107,10 +110,11 @@ class TwiVisuAPI:
             ascending=False,
             **kwargs,
         )
+        _print_user_rankings(rankings)
 
     def make_ff_ratio_user_ranking(self, **kwargs):
         validate_tweet_exists(self._df)
-        make_user_ranking(
+        rankings = make_user_ranking(
             self._df,
             search_word=self._search_word,
             search_query=self._search_query,
@@ -118,10 +122,11 @@ class TwiVisuAPI:
             value_fmt="{:.2f}",
             **kwargs,
         )
+        _print_user_rankings(rankings, value_fmt="{:.4f}")
 
     def make_ff_ratio_close_to_one_user_ranking(self, **kwargs):
         validate_tweet_exists(self._df)
-        make_user_ranking(
+        rankings = make_user_ranking(
             self._df,
             search_word=self._search_word,
             search_query=self._search_query,
@@ -130,3 +135,17 @@ class TwiVisuAPI:
             value_fmt="{:.4f}",
             **kwargs,
         )
+        _print_user_rankings(rankings, value_fmt="{:.4f}")
+
+
+def _print_user_rankings(rankings: Dict, value_fmt="{:,}"):
+    """ユーザランキングをコンソールに表示する
+
+    :param rankings:
+    :param value_fmt: Format of value. Default is 3-digit comma display. For real numbers, {:.2f} is recommended.
+    """
+    for row in rankings:
+        value = value_fmt.format(row["value"])
+        user_name = row["user_name"]
+        url = row["twitter_search_url"]
+        print(f"{value}　\t　{user_name}\t\t{url}")
