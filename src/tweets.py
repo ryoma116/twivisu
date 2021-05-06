@@ -1,22 +1,20 @@
 import time
 from datetime import date, datetime, timedelta
+from logging import getLogger
 from typing import Dict, List, Union
 
 import pytz
 import tweepy
 
-from .constants import (
-    API_COUNTS,
-    FULL_TEXT_TWEET_MODE,
-    SEARCH_API_PATH,
-    TODAY_EXCLUDED,
-)
+from .constants import API_COUNTS, FULL_TEXT_TWEET_MODE, SEARCH_API_PATH, TODAY_EXCLUDED
 from .limits import get_rate_limit_reset_time, is_rate_limit
 from .processors import make_weekday
 
+logger = getLogger(__name__)
+
 
 def search_tweets(
-    api: tweepy.API, search_query: str, limit: int, timezone, follower_ids: List[id]
+    api: tweepy.API, search_query: str, limit: int, timezone
 ) -> List[Dict]:
     """ツイートを検索する
 
@@ -24,10 +22,8 @@ def search_tweets(
     :param search_query: 検索クエリ
     :param timezone: timezoneオブジェクト
     :param limit: 検索件数の上限、この値に達したら結果を返す
-    :param follower_ids: フォロワーIDのリスト
     """
 
-    print(f"===== Start =====")
     _now = datetime.now(timezone)
     _today = _now.date()
 
@@ -45,7 +41,7 @@ def search_tweets(
     while True:
         if is_rate_limit(api, api_path=SEARCH_API_PATH):
             reset_time = get_rate_limit_reset_time(api, api_path=SEARCH_API_PATH)
-            print(f"アクセス上限のため処理休止中({reset_time}秒)..")
+            logger.info(f"アクセス上限のため処理休止中({reset_time}秒)..")
             time.sleep(reset_time)
 
         _tweets = []
@@ -57,7 +53,7 @@ def search_tweets(
                 max_id=next_max_tweet_id,
             )
         except tweepy.RateLimitError:
-            print("アクセス上限のため処理休止中(15分)..")
+            logger.info("アクセス上限のため処理休止中(15分)..")
             time.sleep(15 * 60)
 
         # 取得するツイートがなくなった場合に処理終了
@@ -87,7 +83,7 @@ def search_tweets(
                     "followers_count": t.user.followers_count,
                     "friends_count": t.user.friends_count,
                     "following": t.user.following,
-                    "follower": t.user.id in follower_ids,
+                    "follower": False,  # フォロワーかどうかはsearchから取得できない（別でセットする手段を用意する）
                 }
             )
 
@@ -95,14 +91,13 @@ def search_tweets(
                 limited = True
                 break
 
-        print(f"{'{:,}'.format(len(tweets))} 件取得")
+        logger.info(f"{'{:,}'.format(len(tweets))} 件取得")
         if limited:
             break
 
         next_max_tweet_id = _tweets[-1].id - 1
         time.sleep(1)
 
-    print(f"===== End（合計{'{:,}'.format(len(tweets))}） =====")
     return tweets
 
 

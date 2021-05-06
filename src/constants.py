@@ -17,11 +17,18 @@ class FfRatioOrderModes(Enum):
 
 SEARCH_API_PATH = "/search/tweets"
 FOLLOWER_IDS_API_PATH = "/followers/ids"
+FRIEND_IDS_API_PATH = "/friends/ids"
 API_TYPES = {
     SEARCH_API_PATH: "search",
     FOLLOWER_IDS_API_PATH: "followers",
+    FRIEND_IDS_API_PATH: "friends",
 }
 API_COUNTS = {
     SEARCH_API_PATH: 100,
     FOLLOWER_IDS_API_PATH: 5000,
+    FRIEND_IDS_API_PATH: 5000,
+}
+API_URLS = {
+    FOLLOWER_IDS_API_PATH: "https://api.twitter.com/1.1/followers/ids.json",
+    FRIEND_IDS_API_PATH: "https://api.twitter.com/1.1/friends/ids.json",
 }
