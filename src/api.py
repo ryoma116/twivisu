@@ -6,13 +6,13 @@ import tweepy
 
 from .filters import filter_user
 from .graphs import make_daily_tweet_users_graph, make_daily_tweets_graph
+from .loggers import get_logger
 from .rankings import make_user_ranking
 from .tweets import search_tweets
 from .users import get_follower_ids, get_following_ids
 from .validates import validate_tweet_exists
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__, loglevel=logging.INFO)
 
 
 class TwiVisuAPI:
@@ -28,7 +28,7 @@ class TwiVisuAPI:
         self._timezone = pytz.timezone(timezone)
 
     def search_tweets(self, search_word: str, advanced_query: str, limit: int = None):
-        logger.info("-- search_tweets Start")
+        logger.info("=== search_tweets Start")
         search_query = search_word + " " + advanced_query
         tweets = search_tweets(
             api=self._api,
@@ -39,27 +39,27 @@ class TwiVisuAPI:
         self._search_word = search_word
         self._search_query = search_query
         self._df = pandas.DataFrame(tweets)
-        logger.info(f"-- search_tweets End（合計{'{:,}'.format(len(tweets))}）")
+        logger.info(f"=== search_tweets End（合計{'{:,}'.format(len(tweets))}）")
 
     def set_followers(self, user_screen_name):
-        logger.info("-- set_followers Start")
+        logger.info("=== set_followers Start")
         follower_ids = get_follower_ids(
             api=self._api, user_screen_name=user_screen_name
         )
         self._df["follower"] = self._df.apply(
             lambda x: x.user_id in follower_ids, axis=1
         )
-        logger.info(f"-- set_followers End（合計{'{:,}'.format(len(follower_ids))}）")
+        logger.info(f"=== set_followers End（合計{'{:,}'.format(len(follower_ids))}）")
 
     def set_following(self, user_screen_name):
-        logger.info("-- set_following Start")
+        logger.info("=== set_following Start")
         following_ids = get_following_ids(
             api=self._api, user_screen_name=user_screen_name
         )
         self._df["following"] = self._df.apply(
             lambda x: x.user_id in following_ids, axis=1
         )
-        logger.info(f"-- set_following End（合計{'{:,}'.format(len(following_ids))}）")
+        logger.info(f"=== set_following End（合計{'{:,}'.format(len(following_ids))}）")
 
     def make_daily_tweets_graph(self, **kwargs):
         validate_tweet_exists(self._df)
