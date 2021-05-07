@@ -122,7 +122,6 @@ class TwiVisAPI:
             search_word=self._search_word,
             search_query=self._search_query,
             col="ff_ratio",
-            value_fmt="{:.2f}",
             **kwargs,
         )
         print_user_rankings(
@@ -137,7 +136,6 @@ class TwiVisAPI:
             search_query=self._search_query,
             col="ff_ratio_close_to_one",
             ascending=True,
-            value_fmt="{:.4f}",
             **kwargs,
         )
         print_user_rankings(
