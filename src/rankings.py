@@ -39,9 +39,11 @@ def make_user_ranking(
         twitter_url = (
             f"https://twitter.com/search?src=typed_query&f=live&q={twitter_query}"
         )
-        rows.append({
-            "value": row[col],
-            "user_name": row.user_name,
-            "twitter_search_url": twitter_url,
-        })
+        rows.append(
+            {
+                "value": row[col],
+                "user_name": row.user_name,
+                "twitter_search_url": twitter_url,
+            }
+        )
     return rows
