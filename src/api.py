@@ -7,7 +7,7 @@ import tweepy
 
 from .filters import filter_user
 from .graphs import make_daily_tweet_users_graph, make_daily_tweets_graph
-from .loggers import get_logger
+from .loggers import get_logger, set_logger_timezone
 from .rankings import make_user_ranking
 from .tweets import search_tweets
 from .users import get_follower_ids, get_following_ids
@@ -27,6 +27,7 @@ class TwiVisuAPI:
         self._search_word = None
         self._search_query = None
         self._timezone = pytz.timezone(timezone)
+        set_logger_timezone(timezone)
 
     def search_tweets(self, search_word: str, advanced_query: str, limit: int = None):
         logger.info("=== search_tweets Start")

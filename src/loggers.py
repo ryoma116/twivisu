@@ -1,6 +1,19 @@
 import logging
+from datetime import datetime
+
+from pytz import timezone
 
 logging.basicConfig(level=logging.WARNING)
+_timezone = timezone("UTC")
+
+
+def set_logger_timezone(tz: str):
+    global _timezone
+    _timezone = timezone(tz)
+
+
+def _convert_datetime(*args):
+    return datetime.now(_timezone).timetuple()
 
 
 def get_logger(name, loglevel):
@@ -12,9 +25,11 @@ def get_logger(name, loglevel):
     logger.setLevel(loglevel)
 
     handler = logging.StreamHandler()
-    handler.setFormatter(
-        logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     )
+    formatter.converter = _convert_datetime
+    handler.setFormatter(formatter)
     handler.setLevel(loglevel)
     logger.addHandler(handler)
 
