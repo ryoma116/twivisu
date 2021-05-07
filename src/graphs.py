@@ -27,8 +27,7 @@ def make_daily_tweets_graph(df: pandas.DataFrame, search_word: str, timezone):
             df, main_title="日別ツイート数", count=_total_count, search_word=search_word
         ),
     )
-    fig.show()
-    _print_last_tweeted_datetime(df)
+    return fig
 
 
 def make_daily_tweet_users_graph(df: pandas.DataFrame, search_word: str, timezone):
@@ -51,8 +50,7 @@ def make_daily_tweet_users_graph(df: pandas.DataFrame, search_word: str, timezon
             df, main_title="日別ツイート人数", count=_total_count, search_word=search_word
         ),
     )
-    fig.show()
-    _print_last_tweeted_datetime(df)
+    return fig
 
 
 def plot_line(
@@ -79,11 +77,3 @@ def plot_line(
             x_col: x_label,
         },
     )
-
-
-def _print_last_tweeted_datetime(df: pandas.DataFrame):
-    """ツイートを取得した時間を出力する
-
-    :param df: 描画に使用するDataFrame
-    """
-    print(f"※最終ツイート時間: {df.tweeted_dt.max().strftime('%Y/%-m/%-d %-H:%M:%S')}")

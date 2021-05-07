@@ -1,5 +1,4 @@
 import logging
-from typing import Dict, List
 
 import pandas
 import pytz
@@ -8,7 +7,8 @@ import tweepy
 from .filters import filter_user
 from .graphs import make_daily_tweet_users_graph, make_daily_tweets_graph
 from .loggers import get_logger, set_logger_timezone
-from .rankings import make_user_ranking
+from .printers import print_last_tweeted_datetime
+from .rankings import make_user_ranking, print_user_rankings
 from .tweets import search_tweets
 from .users import get_follower_ids, get_following_ids
 from .validates import validate_tweet_exists
@@ -66,16 +66,18 @@ class TwiVisAPI:
     def make_daily_tweets_graph(self, **kwargs):
         validate_tweet_exists(self._df)
         _df = filter_user(self._df, **kwargs)
-        make_daily_tweets_graph(
+        figure = make_daily_tweets_graph(
             _df, search_word=self._search_word, timezone=self._timezone
         )
+        figure.show()
 
     def make_daily_tweet_users_graph(self, **kwargs):
         validate_tweet_exists(self._df)
         _df = filter_user(self._df, **kwargs)
-        make_daily_tweet_users_graph(
+        figure = make_daily_tweet_users_graph(
             _df, search_word=self._search_word, timezone=self._timezone
         )
+        figure.show()
 
     def make_tweets_user_ranking(self, **kwargs):
         validate_tweet_exists(self._df)
@@ -87,7 +89,7 @@ class TwiVisAPI:
             ascending=False,
             **kwargs,
         )
-        _print_user_rankings(rankings, ranking_name="tweets_user_ranking")
+        print_user_rankings(rankings, ranking_name="tweets_user_ranking")
 
     def make_followers_user_ranking(self, **kwargs):
         validate_tweet_exists(self._df)
@@ -99,7 +101,7 @@ class TwiVisAPI:
             ascending=False,
             **kwargs,
         )
-        _print_user_rankings(rankings, ranking_name="followers_user_ranking")
+        print_user_rankings(rankings, ranking_name="followers_user_ranking")
 
     def make_friends_user_ranking(self, **kwargs):
         validate_tweet_exists(self._df)
@@ -111,7 +113,7 @@ class TwiVisAPI:
             ascending=False,
             **kwargs,
         )
-        _print_user_rankings(rankings, ranking_name="friends_user_ranking")
+        print_user_rankings(rankings, ranking_name="friends_user_ranking")
 
     def make_ff_ratio_user_ranking(self, **kwargs):
         validate_tweet_exists(self._df)
@@ -123,7 +125,7 @@ class TwiVisAPI:
             value_fmt="{:.2f}",
             **kwargs,
         )
-        _print_user_rankings(
+        print_user_rankings(
             rankings, value_fmt="{:.4f}", ranking_name="ff_ratio_user_ranking"
         )
 
@@ -138,26 +140,11 @@ class TwiVisAPI:
             value_fmt="{:.4f}",
             **kwargs,
         )
-        _print_user_rankings(
+        print_user_rankings(
             rankings,
             value_fmt="{:.4f}",
             ranking_name="ff_ratio_close_to_one_user_ranking",
         )
 
-
-def _print_user_rankings(rankings: List[Dict], value_fmt="{:,}", ranking_name=""):
-    """ユーザランキングをコンソールに表示する
-
-    :param rankings:
-    :param value_fmt: Format of value. Default is 3-digit comma display. For real numbers, {:.2f} is recommended.
-    """
-    if len(rankings) == 0:
-        return
-
-    print(f"▼▼▼▼▼ {ranking_name} ▼▼▼▼▼")
-    for row in rankings:
-        value = value_fmt.format(row["value"])
-        user_name = row["user_name"]
-        url = row["twitter_search_url"]
-        print(f"{value}　\t　{user_name}\t\t{url}")
-    print(f"▲▲▲▲▲ {ranking_name} ▲▲▲▲▲")
+    def print_last_tweeted_datetime(self):
+        print_last_tweeted_datetime(self._df)

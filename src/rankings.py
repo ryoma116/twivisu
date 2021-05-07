@@ -1,4 +1,5 @@
 import urllib.parse
+from typing import Dict, List
 
 import pandas as pd
 
@@ -13,7 +14,6 @@ def make_user_ranking(
     ascending: bool = True,
     search_word: str = "",
     search_query: str = "",
-    value_fmt="{:,}",
     **kwargs,
 ):
     """ユーザを画面に出力する
@@ -47,3 +47,21 @@ def make_user_ranking(
             }
         )
     return rows
+
+
+def print_user_rankings(rankings: List[Dict], value_fmt="{:,}", ranking_name=""):
+    """ユーザランキングをコンソールに表示する
+
+    :param rankings:
+    :param value_fmt: Format of value. Default is 3-digit comma display. For real numbers, {:.2f} is recommended.
+    """
+    if len(rankings) == 0:
+        return
+
+    print(f"▼▼▼▼▼ {ranking_name} ▼▼▼▼▼")
+    for row in rankings:
+        value = value_fmt.format(row["value"])
+        user_name = row["user_name"]
+        url = row["twitter_search_url"]
+        print(f"{value}　\t　{user_name}\t\t{url}")
+    print(f"▲▲▲▲▲ {ranking_name} ▲▲▲▲▲")
