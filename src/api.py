@@ -16,7 +16,7 @@ from .validates import validate_tweet_exists
 logger = get_logger(__name__, loglevel=logging.INFO)
 
 
-class TwiVisuAPI:
+class TwiVisAPI:
     def __init__(
         self, api_key, api_secret, access_token, access_token_secret, timezone="UTC"
     ):
