@@ -1,5 +1,5 @@
 import logging
-from typing import Dict
+from typing import Dict, List
 
 import pandas
 import pytz
@@ -87,7 +87,7 @@ class TwiVisuAPI:
             ascending=False,
             **kwargs,
         )
-        _print_user_rankings(rankings)
+        _print_user_rankings(rankings, ranking_name="tweets_user_ranking")
 
     def make_followers_user_ranking(self, **kwargs):
         validate_tweet_exists(self._df)
@@ -99,7 +99,7 @@ class TwiVisuAPI:
             ascending=False,
             **kwargs,
         )
-        _print_user_rankings(rankings)
+        _print_user_rankings(rankings, ranking_name="followers_user_ranking")
 
     def make_friends_user_ranking(self, **kwargs):
         validate_tweet_exists(self._df)
@@ -111,7 +111,7 @@ class TwiVisuAPI:
             ascending=False,
             **kwargs,
         )
-        _print_user_rankings(rankings)
+        _print_user_rankings(rankings, ranking_name="friends_user_ranking")
 
     def make_ff_ratio_user_ranking(self, **kwargs):
         validate_tweet_exists(self._df)
@@ -123,7 +123,9 @@ class TwiVisuAPI:
             value_fmt="{:.2f}",
             **kwargs,
         )
-        _print_user_rankings(rankings, value_fmt="{:.4f}")
+        _print_user_rankings(
+            rankings, value_fmt="{:.4f}", ranking_name="ff_ratio_user_ranking"
+        )
 
     def make_ff_ratio_close_to_one_user_ranking(self, **kwargs):
         validate_tweet_exists(self._df)
@@ -136,17 +138,26 @@ class TwiVisuAPI:
             value_fmt="{:.4f}",
             **kwargs,
         )
-        _print_user_rankings(rankings, value_fmt="{:.4f}")
+        _print_user_rankings(
+            rankings,
+            value_fmt="{:.4f}",
+            ranking_name="ff_ratio_close_to_one_user_ranking",
+        )
 
 
-def _print_user_rankings(rankings: Dict, value_fmt="{:,}"):
+def _print_user_rankings(rankings: List[Dict], value_fmt="{:,}", ranking_name=""):
     """ユーザランキングをコンソールに表示する
 
     :param rankings:
     :param value_fmt: Format of value. Default is 3-digit comma display. For real numbers, {:.2f} is recommended.
     """
+    if len(rankings) == 0:
+        return
+
+    print(f"▼▼▼▼▼ {ranking_name} ▼▼▼▼▼")
     for row in rankings:
         value = value_fmt.format(row["value"])
         user_name = row["user_name"]
         url = row["twitter_search_url"]
         print(f"{value}　\t　{user_name}\t\t{url}")
+    print(f"▲▲▲▲▲ {ranking_name} ▲▲▲▲▲")
