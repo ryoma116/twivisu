@@ -7,7 +7,6 @@ import tweepy
 from .filters import filter_user
 from .graphs import make_daily_tweet_users_graph, make_daily_tweets_graph
 from .loggers import get_logger, set_logger_timezone
-from .printers import print_last_tweeted_datetime
 from .rankings import make_user_ranking, print_user_rankings
 from .tweets import search_tweets
 from .users import get_follower_ids, get_following_ids
@@ -144,5 +143,7 @@ class TwiVisAPI:
             ranking_name="ff_ratio_close_to_one_user_ranking",
         )
 
-    def print_last_tweeted_datetime(self):
-        print_last_tweeted_datetime(self._df)
+    def print_last_tweeted_time(self):
+        print(
+            f"last tweeted time: {self._df.tweeted_dt.max().strftime('%Y/%-m/%-d %-H:%M:%S')}"
+        )
