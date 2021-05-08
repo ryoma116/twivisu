@@ -82,7 +82,6 @@ class TwiVisAPI:
         validate_tweet_exists(self._df)
         rankings = make_user_ranking(
             self._df,
-            search_word=self._search_word,
             search_query=self._search_query,
             col="tweets_count",
             ascending=False,
@@ -94,7 +93,6 @@ class TwiVisAPI:
         validate_tweet_exists(self._df)
         rankings = make_user_ranking(
             self._df,
-            search_word=self._search_word,
             search_query=self._search_query,
             col="followers_count",
             ascending=False,
@@ -106,7 +104,6 @@ class TwiVisAPI:
         validate_tweet_exists(self._df)
         rankings = make_user_ranking(
             self._df,
-            search_word=self._search_word,
             search_query=self._search_query,
             col="friends_count",
             ascending=False,
@@ -118,7 +115,6 @@ class TwiVisAPI:
         validate_tweet_exists(self._df)
         rankings = make_user_ranking(
             self._df,
-            search_word=self._search_word,
             search_query=self._search_query,
             col="ff_ratio",
             **kwargs,
@@ -131,7 +127,6 @@ class TwiVisAPI:
         validate_tweet_exists(self._df)
         rankings = make_user_ranking(
             self._df,
-            search_word=self._search_word,
             search_query=self._search_query,
             col="ff_ratio_close_to_one",
             ascending=True,
