@@ -9,15 +9,15 @@ def _requires_from_file(filename):
 
 
 setuptools.setup(
-    name="twivisu",
+    name="twivis",
     version="0.1.0",
     author="Ryoma Uehara",
     description="Provides functions for displaying Twitter API graphs and rankings.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/ryoma116/twivisu",
-    packages=["twivisu"],
-    package_dir={"twivisu": "src"},
+    url="https://github.com/ryoma116/twivis",
+    packages=["twivis"],
+    package_dir={"twivis": "src"},
     include_package_data=True,
     zip_safe=False,
     install_requires=_requires_from_file('requirements.txt'),
