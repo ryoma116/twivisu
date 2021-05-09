@@ -21,7 +21,9 @@ class TwiVisAPI:
     ):
         auth = tweepy.OAuthHandler(api_key, api_secret)
         auth.set_access_token(access_token, access_token_secret)
-        self._api = tweepy.API(auth)
+        self._api = tweepy.API(
+            auth, retry_count=3, retry_delay=1, wait_on_rate_limit=True
+        )
         self._df = None
         self._search_word = None
         self._search_query = None
