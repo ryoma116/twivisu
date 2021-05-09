@@ -28,7 +28,7 @@ def make_weekday(dt: datetime, timezone) -> str:
     :param timezone: timezoneオブジェクト
     :return 形式：%-m/%-d(曜日)
     """
-    dstr = dt.strftime("%-m/%-d")
+    dstr = dt.strftime("%m/%d")
     if timezone.zone == "Asia/Tokyo":
         return f"{dstr}({JA_WEEKDAYS[dt.weekday()]})"
     else:
