@@ -6,7 +6,7 @@ from typing import Dict, List, Union
 import pytz
 import tweepy
 
-from auth import TwitterAuthKeys, auth_twitter_api
+from .auth import TwitterAuthKeys, auth_twitter_api
 
 from .constants import (
     API_COUNTS,

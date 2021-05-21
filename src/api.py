@@ -3,7 +3,7 @@ import logging
 import pandas
 import pytz
 
-from auth import TwitterAuthKeys, auth_twitter_api
+from .auth import TwitterAuthKeys, auth_twitter_api
 
 from .filters import filter_user
 from .graphs import (
