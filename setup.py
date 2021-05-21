@@ -10,7 +10,7 @@ def _requires_from_file(filename):
 
 setuptools.setup(
     name="twivis",
-    version="0.1.0",
+    version="1.0.1",
     author="Ryoma Uehara",
     description="Provides functions for displaying Twitter API graphs and rankings.",
     long_description=long_description,
