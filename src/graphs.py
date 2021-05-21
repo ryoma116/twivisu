@@ -2,6 +2,7 @@ import pandas
 import plotly.express
 
 from .processors import (
+    make_count_tweeted_df,
     make_count_tweeted_weekday_df,
     make_title,
     make_tweet_user_weekday_max_hour_df,
@@ -53,6 +54,29 @@ def make_daily_tweet_users_graph(df: pandas.DataFrame, search_word: str, timezon
     return fig
 
 
+def make_hourly_tweets_graph(df: pandas.DataFrame, search_word: str, timezone):
+    """時間別のツイート数を折れ線グラフで出力する
+
+    :param df: 集計対象のDataFrame
+    :param search_word: タイトルに表示する検索ワード
+    :param timezone: timezoneオブジェクト
+    """
+    _df = make_count_tweeted_df(df, timezone=timezone, group_col="tweeted_wh")
+    _total_count = _df.sum()["count"]
+    fig = plot_line(
+        _df,
+        x_col="tweeted_wh",
+        x_label="ツイート時間",
+        y_col="count",
+        y_label="ツイート人数",
+        title=make_title(
+            df, main_title="時間別ツイート数", count=_total_count, search_word=search_word
+        ),
+    )
+    fig.update_xaxes(tickangle=-90)
+    return fig
+
+
 def plot_line(
     df: pandas.DataFrame, x_col: str, y_col: str, x_label: str, y_label: str, title: str
 ):
@@ -70,7 +94,6 @@ def plot_line(
         df,
         x=x_col,
         y=y_col,
-        text=y_col,
         title=title,
         labels={
             y_col: y_label,

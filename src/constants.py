@@ -32,3 +32,5 @@ API_URLS = {
     FOLLOWER_IDS_API_PATH: "https://api.twitter.com/1.1/followers/ids.json",
     FRIEND_IDS_API_PATH: "https://api.twitter.com/1.1/friends/ids.json",
 }
+
+RETRY_COUNT = 10

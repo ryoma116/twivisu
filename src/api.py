@@ -2,10 +2,15 @@ import logging
 
 import pandas
 import pytz
-import tweepy
+
+from auth import TwitterAuthKeys, auth_twitter_api
 
 from .filters import filter_user
-from .graphs import make_daily_tweet_users_graph, make_daily_tweets_graph
+from .graphs import (
+    make_daily_tweet_users_graph,
+    make_daily_tweets_graph,
+    make_hourly_tweets_graph,
+)
 from .loggers import get_logger, set_logger_timezone
 from .rankings import make_user_ranking, print_user_rankings
 from .tweets import search_tweets
@@ -19,10 +24,11 @@ class TwiVisAPI:
     def __init__(
         self, api_key, api_secret, access_token, access_token_secret, timezone="UTC"
     ):
-        auth = tweepy.OAuthHandler(api_key, api_secret)
-        auth.set_access_token(access_token, access_token_secret)
-        self._api = tweepy.API(
-            auth, retry_count=3, retry_delay=1, wait_on_rate_limit=True
+        self._auth_keys = TwitterAuthKeys(
+            api_key=api_key,
+            api_secret=api_secret,
+            access_token=access_token,
+            access_token_secret=access_token_secret,
         )
         self._df = None
         self._search_word = None
@@ -34,7 +40,7 @@ class TwiVisAPI:
         logger.info("=== search_tweets Start")
         search_query = search_word + " " + advanced_query
         tweets = search_tweets(
-            api=self._api,
+            api=auth_twitter_api(auth_keys=self._auth_keys),
             search_query=search_query,
             limit=limit,
             timezone=self._timezone,
@@ -47,7 +53,8 @@ class TwiVisAPI:
     def set_followers(self, user_screen_name):
         logger.info("=== set_followers Start")
         follower_ids = get_follower_ids(
-            api=self._api, user_screen_name=user_screen_name
+            api=auth_twitter_api(auth_keys=self._auth_keys),
+            user_screen_name=user_screen_name,
         )
         self._df["follower"] = self._df.apply(
             lambda x: x.user_id in follower_ids, axis=1
@@ -57,7 +64,8 @@ class TwiVisAPI:
     def set_following(self, user_screen_name):
         logger.info("=== set_following Start")
         following_ids = get_following_ids(
-            api=self._api, user_screen_name=user_screen_name
+            api=auth_twitter_api(auth_keys=self._auth_keys),
+            user_screen_name=user_screen_name,
         )
         self._df["following"] = self._df.apply(
             lambda x: x.user_id in following_ids, axis=1
@@ -76,6 +84,14 @@ class TwiVisAPI:
         validate_tweet_exists(self._df)
         _df = filter_user(self._df, **kwargs)
         figure = make_daily_tweet_users_graph(
+            _df, search_word=self._search_word, timezone=self._timezone
+        )
+        figure.show()
+
+    def make_hourly_tweets_graph(self, **kwargs):
+        validate_tweet_exists(self._df)
+        _df = filter_user(self._df, **kwargs)
+        figure = make_hourly_tweets_graph(
             _df, search_word=self._search_word, timezone=self._timezone
         )
         figure.show()
