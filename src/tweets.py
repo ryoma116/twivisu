@@ -6,10 +6,17 @@ from typing import Dict, List, Union
 import pytz
 import tweepy
 
-from .constants import API_COUNTS, FULL_TEXT_TWEET_MODE, SEARCH_API_PATH, TODAY_EXCLUDED
-from .limits import get_rate_limit_reset_time, is_rate_limit
+from auth import TwitterAuthKeys, auth_twitter_api
+
+from .constants import (
+    API_COUNTS,
+    FULL_TEXT_TWEET_MODE,
+    RETRY_COUNT,
+    SEARCH_API_PATH,
+    TODAY_EXCLUDED,
+)
 from .loggers import get_logger
-from .processors import make_weekday
+from .processors import make_weekday, make_weekday_hour
 
 logger = get_logger(__name__, loglevel=logging.INFO)
 
@@ -39,12 +46,17 @@ def search_tweets(
     tweets = []
     next_max_tweet_id = None
     limited = False
-    while True:
-        if is_rate_limit(api, api_path=SEARCH_API_PATH):
-            reset_time = get_rate_limit_reset_time(api, api_path=SEARCH_API_PATH)
-            logger.info(f"アクセス上限のため処理休止中({reset_time}秒)..")
-            time.sleep(reset_time)
 
+    # リトライ用に退避
+    auth_keys = TwitterAuthKeys(
+        api_key=api.auth.consumer_key,
+        api_secret=api.auth.consumer_secret,
+        access_token=api.auth.access_token,
+        access_token_secret=api.auth.access_token_secret,
+    )
+
+    retry_count = 0
+    while True:
         _tweets = []
         try:
             _tweets = api.search(
@@ -53,9 +65,16 @@ def search_tweets(
                 count=API_COUNTS[SEARCH_API_PATH],
                 max_id=next_max_tweet_id,
             )
-        except tweepy.RateLimitError:
-            logger.info("アクセス上限のため処理休止中(15分)..")
-            time.sleep(15 * 60)
+            retry_count = 0
+
+        except Exception as e:
+            if retry_count > RETRY_COUNT:
+                raise e
+
+            logger.info("ReadTimeout occurred and re-authenticated.")
+            api = auth_twitter_api(auth_keys=auth_keys)
+            retry_count += 1
+            continue
 
         # 取得するツイートがなくなった場合に処理終了
         if len(_tweets) == 0:
@@ -67,12 +86,17 @@ def search_tweets(
             else:
                 dt = _convert_timezone(t.created_at, timezone=timezone)
 
+            tweeted_weekday = make_weekday(dt, timezone=timezone)
+            tweeted_hour = dt.strftime("%H")
             tweets.append(
                 {
                     "tweeted_dt": dt,
                     "tweeted_date": dt.date(),
-                    "tweeted_weekday": make_weekday(dt, timezone=timezone),
-                    "tweeted_hour": dt.strftime("%H"),
+                    "tweeted_weekday": tweeted_weekday,
+                    "tweeted_hour": tweeted_hour,
+                    "tweeted_wh": make_weekday_hour(
+                        weekday=tweeted_weekday, hour=tweeted_hour
+                    ),
                     "tweet_id": t.id,
                     "favorite_count": t.favorite_count,
                     "retweet_count": t.retweet_count,

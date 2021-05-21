@@ -35,6 +35,10 @@ def make_weekday(dt: datetime, timezone) -> str:
         return f"{dstr}({WEEKDAYS[dt.weekday()]})"
 
 
+def make_weekday_hour(weekday, hour):
+    return f"{weekday} {hour}"
+
+
 def make_tweeted_weekday_range(timezone) -> List[str]:
     """グラフに描画する曜日付き日付ラベルの範囲を生成する
 
@@ -66,12 +70,43 @@ def make_count_tweeted_weekday_df(df: pandas.DataFrame, timezone) -> pandas.Data
     return _df.sort_index().reset_index()
 
 
+def make_count_tweeted_df(
+    df: pandas.DataFrame, timezone, group_col
+) -> pandas.DataFrame:
+    """日付別にツイート数をカウントしたDataFrameを生成する
+
+    :param df: 対象のDataFrame
+    :param timezone: timezoneオブジェクト
+    :return 日付別ツイート数DataFrame
+    """
+    _df = df.groupby(group_col)["tweet_id"].agg(count="count")
+    for wd in make_tweeted_weekday_hour_label_range(timezone=timezone):
+        if wd not in _df.index:
+            _zero_df = pandas.DataFrame([0], index=[wd], columns=["count"])
+            _zero_df.index.name = group_col
+            _df = _df.append(_zero_df)
+    return _df.sort_index().reset_index()
+
+
 def make_tweeted_hour_label_range() -> List[str]:
     """グラフに描画する時間ラベルの範囲を生成する
 
     :return 時間ラベルのリスト
     """
     return [str(i).zfill(2) for i in range(24)]
+
+
+def make_tweeted_weekday_hour_label_range(timezone) -> List[str]:
+    """グラフに描画する日付・時間ラベルの範囲を生成する
+
+    :return 時間ラベルのリスト
+    """
+    labels = []
+    for w in make_tweeted_weekday_range(timezone):
+        for h in make_tweeted_hour_label_range():
+            labels.append(make_weekday_hour(weekday=w, hour=h))
+
+    return labels
 
 
 def make_count_tweeted_hour_df(df: pandas.DataFrame) -> pandas.DataFrame:
