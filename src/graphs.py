@@ -23,7 +23,7 @@ def make_daily_tweets_graph(df: pandas.DataFrame, search_word: str, timezone):
         x_col="tweeted_weekday",
         x_label="ツイート日付",
         y_col="count",
-        y_label="ツイート人数",
+        y_label="ツイート数",
         title=make_title(
             df, main_title="日別ツイート数", count=_total_count, search_word=search_word
         ),
@@ -68,7 +68,7 @@ def make_hourly_tweets_graph(df: pandas.DataFrame, search_word: str, timezone):
         x_col="tweeted_wh",
         x_label="ツイート時間",
         y_col="count",
-        y_label="ツイート人数",
+        y_label="ツイート数",
         title=make_title(
             df, main_title="時間別ツイート数", count=_total_count, search_word=search_word
         ),
